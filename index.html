@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Porphyria–Gut–Edema Working Model</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f7f5f0;--panel:#ffffff;--ink:#1d2326;--muted:#5d6669;--line:#d9d6cc;
+  --stall:#b5542f;--stall-bg:#f6e7df;--release:#2e7d6b;--release-bg:#e1f0ec;
+  --vp:#6b3fa0;--vp-bg:#eee6f6;--warn:#8a6d12;--warn-bg:#f8f0d4;--open:#2d5d8a;--open-bg:#e3ecf5;
+  --strong:#2e7d6b;--mid:#8a6d12;--weak:#b5542f;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#161a1c;--panel:#1f2427;--ink:#e8e6e0;--muted:#a3abad;--line:#353c40;
+  --stall:#e58a64;--stall-bg:#3a2820;--release:#6cc4ae;--release-bg:#1d332e;
+  --vp:#b993e6;--vp-bg:#2c2338;--warn:#e0c060;--warn-bg:#36301a;--open:#8cb8e3;--open-bg:#1d2a37;
+  --strong:#6cc4ae;--mid:#e0c060;--weak:#e58a64;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#161a1c;--panel:#1f2427;--ink:#e8e6e0;--muted:#a3abad;--line:#353c40;
+  --stall:#e58a64;--stall-bg:#3a2820;--release:#6cc4ae;--release-bg:#1d332e;
+  --vp:#b993e6;--vp-bg:#2c2338;--warn:#e0c060;--warn-bg:#36301a;--open:#8cb8e3;--open-bg:#1d2a37;
+  --strong:#6cc4ae;--mid:#e0c060;--weak:#e58a64;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif;padding-inline:16px;padding-block:28px 60px;margin:0}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:30px}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4.4vw,42px);line-height:1.1}
+h2{font-size:24px;display:flex;gap:10px;align-items:baseline}
+h2 .n{font:500 12px "IBM Plex Mono",monospace;color:var(--muted);letter-spacing:.06em}
+h3{font-size:17px}
+p{margin:0;max-width:72ch}
+.kicker{font:500 12px "IBM Plex Mono",monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.meta{color:var(--muted);font-size:13.5px}
+section{display:grid;gap:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.open{background:var(--open-bg);border-left:5px solid var(--open);border-radius:8px;padding:16px 18px;display:grid;gap:8px}
+.open strong{color:var(--open)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.grid2>*{min-width:0}
+ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.obs li{max-width:80ch}
+.obs b{font-weight:600}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 12px "IBM Plex Sans";letter-spacing:.05em;text-transform:uppercase;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.pill{display:inline-block;font:600 11.5px "IBM Plex Mono",monospace;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.s{background:var(--release-bg);color:var(--strong)}.m{background:var(--warn-bg);color:var(--mid)}.w{background:var(--stall-bg);color:var(--weak)}
+.np{background:var(--release-bg);color:var(--release)}.psp{background:var(--warn-bg);color:var(--warn)}.p{background:var(--stall-bg);color:var(--stall)}.nv{background:var(--open-bg);color:var(--open)}
+.diagram{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px}
+.diagram svg{display:block;min-width:900px;width:100%;height:auto}
+svg text{font-family:"IBM Plex Sans",sans-serif;fill:var(--ink)}
+.step{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.step:last-child{border-bottom:0}
+.num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:600 13px "IBM Plex Mono";color:#fff}
+.num.st{background:var(--stall)}.num.re{background:var(--release)}
+.step b{display:block}
+.six{outline:2px solid var(--vp);outline-offset:4px;border-radius:6px}
+.tag{font:500 11px "IBM Plex Mono";color:var(--vp);letter-spacing:.05em;text-transform:uppercase}
+.callout{background:var(--warn-bg);border-left:4px solid var(--warn);padding:12px 16px;border-radius:6px}
+.vpbox{background:var(--vp-bg);border-left:4px solid var(--vp);padding:12px 16px;border-radius:6px}
+footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+
+</head><body>
+<div class="wrap">
+
+<header style="display:grid;gap:10px">
+  <div class="kicker">Working notes · AP · October 2026</div>
+  <h1>Porphyria, gut inflammation &amp; edema — the working model</h1>
+  <p class="meta">A one-page map of the theory first laid out in early October 2026: how variegate porphyria, gut inflammation and whole-body edema seem to connect. Working notes for discussion with the treating physician; not a diagnosis.</p>
+</header>
+
+<div class="open">
+  <div class="kicker" style="color:var(--open)">Read this first</div>
+  <p><strong>Causation is not settled.</strong> It is open whether porphyria set off the gut problem and the loop, or whether immune / mast-cell disease started something that porphyria then amplified, or some mix of the two. What is known is that porphyria, gut inflammation and edema are <em>connected</em>. Each piece is being worked on separately. The arrows below show a proposed sequence, not an established direction.</p>
+  <p><strong>“#6”</strong> refers to the <strong>link between porphyria, gut inflammation and edema</strong>: how something local (the gut) becomes systemic (swelling throughout the body, kidneys, heart rate). It is not just “the edema step”.</p>
+</div>
+
+<!-- DIAGRAM -->
+<section>
+  <h2><span class="n">01</span>The loop at a glance</h2>
+  <div class="diagram">
+  <svg viewBox="0 0 1000 560" role="img" aria-label="Diagram of the stall and release loop with porphyria and mast-cell inputs">
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--muted)"/></marker>
+      <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:var(--release)"/></marker>
+    </defs>
+    <rect x="20" y="16" width="440" height="92" rx="10" style="fill:var(--vp-bg);stroke:var(--vp)"/>
+    <text x="36" y="40" font-weight="600" font-size="14" style="fill:var(--vp)">Porphyria (VP)</text>
+    <text x="36" y="60" font-size="12.5">autonomic: stalls motility · can cause inappropriate ADH</text>
+    <text x="36" y="78" font-size="12.5">inflammation itself is a VP trigger</text>
+    <rect x="540" y="16" width="440" height="92" rx="10" style="fill:var(--open-bg);stroke:var(--open)"/>
+    <text x="556" y="40" font-weight="600" font-size="14" style="fill:var(--open)">Immune / mast-cell disease</text>
+    <text x="556" y="60" font-size="12.5">mucosal mast cells · mastocytosis history</text>
+    <text x="556" y="78" font-size="12.5">histamine, cytokines released from the gut wall</text>
+    <text x="500" y="56" text-anchor="middle" font-size="22" style="fill:var(--muted)">⇄</text>
+    <text x="500" y="98" text-anchor="middle" font-size="11.5" font-style="italic" style="fill:var(--muted)">which came first? — open</text>
+    <rect x="20" y="140" width="190" height="64" rx="8" style="fill:var(--panel);stroke:var(--line)"/>
+    <text x="34" y="164" font-weight="600" font-size="13.5">Food load</text>
+    <text x="34" y="184" font-size="12">fructans, volume, fat</text>
+    <text x="34" y="198" font-size="12">heat · sun · exertion add</text>
+    <g font-size="12.5">
+      <rect x="250" y="140" width="150" height="64" rx="8" style="fill:var(--stall-bg);stroke:var(--stall)"/>
+      <text x="262" y="162" font-weight="600">1–2 Delivery &amp;</text><text x="262" y="178" font-weight="600">trigger</text><text x="262" y="195" font-size="11.5">mast cells, fermentation</text>
+      <rect x="430" y="140" width="150" height="64" rx="8" style="fill:var(--stall-bg);stroke:var(--stall)"/>
+      <text x="442" y="162" font-weight="600">3 Motility stops</text><text x="442" y="180" font-size="11.5">prokinetics fail here</text>
+      <rect x="610" y="140" width="150" height="64" rx="8" style="fill:var(--stall-bg);stroke:var(--stall)"/>
+      <text x="622" y="162" font-weight="600">4 Stasis feeds</text><text x="622" y="178" font-weight="600">itself</text>
+      <rect x="790" y="140" width="190" height="64" rx="8" style="fill:var(--stall-bg);stroke:var(--stall)"/>
+      <text x="802" y="162" font-weight="600">5 Belly</text><text x="802" y="180" font-size="11.5">distension, fullness,</text><text x="802" y="195" font-size="11.5">fluid sequestered in gut</text>
+    </g>
+    <line x1="210" y1="172" x2="248" y2="172" stroke-width="2" style="stroke:var(--muted)" marker-end="url(#a)"/>
+    <line x1="400" y1="172" x2="428" y2="172" stroke-width="2" style="stroke:var(--muted)" marker-end="url(#a)"/>
+    <line x1="580" y1="172" x2="608" y2="172" stroke-width="2" style="stroke:var(--muted)" marker-end="url(#a)"/>
+    <line x1="760" y1="172" x2="788" y2="172" stroke-width="2" style="stroke:var(--muted)" marker-end="url(#a)"/>
+    <path d="M240 108 L325 138" stroke-dasharray="5 4" stroke-width="1.6" fill="none" style="stroke:var(--vp)" marker-end="url(#a)"/>
+    <path d="M240 108 L505 138" stroke-dasharray="5 4" stroke-width="1.6" fill="none" style="stroke:var(--vp)" marker-end="url(#a)"/>
+    <path d="M760 108 L330 138" stroke-dasharray="5 4" stroke-width="1.6" fill="none" style="stroke:var(--open)" marker-end="url(#a)"/>
+    <rect x="560" y="250" width="420" height="96" rx="10" stroke-width="2.5" style="fill:var(--vp-bg);stroke:var(--vp)"/>
+    <text x="576" y="274" font-weight="700" font-size="14" style="fill:var(--vp)">#6 — local becomes systemic</text>
+    <text x="576" y="294" font-size="12.5">whole-body edema: face, arms, belly, legs</text>
+    <text x="576" y="312" font-size="12.5">gut mediators, capillary leak and/or kidney retention</text>
+    <text x="576" y="332" font-size="11.5" font-style="italic" style="fill:var(--muted)">+ fast emptying → dumping → HR up in 10–30 min</text>
+    <line x1="885" y1="204" x2="830" y2="248" stroke-width="2" style="stroke:var(--muted)" marker-end="url(#a)"/>
+    <rect x="160" y="262" width="330" height="72" rx="8" style="fill:var(--stall-bg);stroke:var(--stall)"/>
+    <text x="176" y="286" font-weight="600" font-size="13">7 Kidneys hold on</text>
+    <text x="176" y="305" font-size="12">RAAS / ADH · low urine · HR rises</text>
+    <text x="176" y="322" font-size="12">drinking helps only partly</text>
+    <line x1="558" y1="298" x2="492" y2="298" stroke-width="2" style="stroke:var(--muted)" marker-end="url(#a)"/>
+    <path d="M150 64 Q 100 230 158 290" stroke-dasharray="5 4" stroke-width="1.6" fill="none" style="stroke:var(--vp)" marker-end="url(#a)"/>
+    <text x="70" y="240" font-size="11" style="fill:var(--vp)">ADH</text>
+    <g font-size="12.5">
+      <rect x="20" y="410" width="250" height="70" rx="8" style="fill:var(--release-bg);stroke:var(--release)"/>
+      <text x="34" y="434" font-weight="600">8 Load drops or</text><text x="34" y="451" font-weight="600">inflammation dampened</text>
+      <rect x="320" y="410" width="250" height="70" rx="8" style="fill:var(--release-bg);stroke:var(--release)"/>
+      <text x="334" y="434" font-weight="600">9 Spontaneous diuresis</text><text x="334" y="452" font-size="11.5">mostly overnight; urine ahead</text>
+      <rect x="620" y="410" width="250" height="70" rx="8" style="fill:var(--release-bg);stroke:var(--release)"/>
+      <text x="634" y="434" font-weight="600">10 Motility returns</text><text x="634" y="452" font-size="11.5">dump · gas · HR settles</text>
+    </g>
+    <path d="M325 336 Q 200 380 145 408" stroke-width="2" fill="none" style="stroke:var(--release)" marker-end="url(#ar)"/>
+    <line x1="270" y1="445" x2="318" y2="445" stroke-width="2" style="stroke:var(--release)" marker-end="url(#ar)"/>
+    <line x1="570" y1="445" x2="618" y2="445" stroke-width="2" style="stroke:var(--release)" marker-end="url(#ar)"/>
+    <path d="M870 445 Q 975 445 975 380 Q 975 360 975 352" stroke-width="2" stroke-dasharray="3 5" fill="none" style="stroke:var(--stall)" marker-end="url(#a)"/>
+    <text x="700" y="512" font-size="12.5" font-weight="600" style="fill:var(--stall)">Unfinished cycle: step 9 never reaches baseline —</text>
+    <text x="700" y="530" font-size="12.5" style="fill:var(--stall)">the 50+ lb never resets, next load restarts the loop</text>
+    <text x="20" y="530" font-size="11.5" style="fill:var(--muted)">Dashed purple / blue = possible inputs from either side · direction not established</text>
+  </svg>
+  </div>
+</section>
+
+<!-- OBSERVATIONS -->
+<section>
+  <h2><span class="n">02</span>What the history shows</h2>
+  <div class="grid2">
+    <div class="panel">
+      <h3 style="margin-bottom:10px">Gut and food</h3>
+      <ul class="obs">
+        <li><b>Regurgitation was a release valve.</b> Before April it offloaded part of each meal; it stopped when the flare began, and the full load has gone through since, with rapid gastric emptying.</li>
+        <li><b>Less food, fewer symptoms.</b> No meals did best, small frequent meals next, large meals worst. Clean, simple diets improve things.</li>
+        <li><b>Fructan avoidance does more than restore motility.</b> When fructans are removed, motility returns, diuresis begins and inflammation starts to come down: one gut input, several whole-body responses.</li>
+        <li><b>Prokinetics fail during stalls</b> (prucalopride, linaclotide), which suggests the stall is not simply a motility defect.</li>
+        <li><b>Heart rate can rise within 10–30 minutes of eating.</b> That is too fast for fermentation. It fits fast emptying and early dumping: fluid pulled into the gut, blood pooling in the gut circulation, effective volume drops.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3 style="margin-bottom:10px">Fluid and weight</h3>
+      <ul class="obs">
+        <li><b>Swelling is whole-body</b>: face, under the chin, arms and wrists, belly, calves, shins and ankles. It is not limited to dependent areas.</li>
+        <li><b>Release episodes recur without a diuretic</b>: nights of 1 L+ urine ahead of intake, heart rate settles, heavy bowel movement and gas.</li>
+        <li><b>The 50+ lb gained since April has never reset.</b> Most plausibly a large share is fluid; fat would need a ~175,000 kcal surplus on 800–1,600 kcal/day (tirzepatide). Steroid effect and bowel contents add some.</li>
+        <li><b>Each release stops short of baseline</b>, so the next load starts from a higher fluid level.</li>
+        <li><b>The tension:</b> the gut does best with less food, but VP needs a carbohydrate floor (200 g/day minimum, 260–280 g target). A dextrose trial (sugar with almost no food bulk) could separate the two needs.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CHAIN DETAIL -->
+<section>
+  <h2><span class="n">03</span>The chain, step by step</h2>
+  <p class="meta">Proposed sequence. The order is a hypothesis; see the note at the top.</p>
+  <div class="grid2">
+    <div class="panel">
+      <div class="kicker" style="color:var(--stall);margin-bottom:6px">Stall phase</div>
+      <div class="step"><span class="num st">1</span><div><b>Delivery</b>Food reaches the small bowel quickly (fast emptying; no regurgitation outlet).</div></div>
+      <div class="step"><span class="num st">2</span><div><b>Trigger</b>Fructans and similar activate mucosal mast cells; fermentation and distension.</div></div>
+      <div class="step"><span class="num st">3</span><div><b>Motility shuts down</b>Explains why prokinetics fail during a stall.</div></div>
+      <div class="step"><span class="num st">4</span><div><b>Stasis feeds itself</b>Sitting contents keep fermenting and keep the trigger going.</div></div>
+      <div class="step"><span class="num st">5</span><div><b>Belly</b>Distension and fluid held in the gut.</div></div>
+      <div class="step six"><span class="num st" style="background:var(--vp)">6</span><div><span class="tag">“#6”: the porphyria / gut / edema link</span><b>Whole-body edema</b>Gut inflammation spreads beyond the gut. Possible routes: mediators (histamine, cytokines, bacterial products) loosening capillaries; inflammatory signals driving the kidneys to hold salt and water; porphyria-related ADH. Probably more than one at once. This is where local becomes systemic.</div></div>
+      <div class="step"><span class="num st">7</span><div><b>Kidneys hold on</b>RAAS / ADH activation: low urine, heart rate rises, drinking helps only partly.</div></div>
+    </div>
+    <div style="display:grid;gap:14px;align-content:start">
+      <div class="panel">
+        <div class="kicker" style="color:var(--release);margin-bottom:6px">Release phase</div>
+        <div class="step"><span class="num re">8</span><div><b>Load reduced or inflammation dampened</b>e.g. fructans removed, anti-inflammatory treatment.</div></div>
+        <div class="step"><span class="num re">9</span><div><b>Spontaneous diuresis</b>Mostly overnight.</div></div>
+        <div class="step"><span class="num re">10</span><div><b>Motility returns</b>Bowel movement, gas, heart rate settles.</div></div>
+      </div>
+      <div class="callout"><b>Unfinished cycle.</b> Step 9 never completes back to baseline, so each new load starts from a higher fluid level.</div>
+      <div class="vpbox" style="display:grid;gap:6px">
+        <b style="color:var(--vp)">Where porphyria touches the chain</b>
+        <ul>
+          <li>Inflammation is a known VP trigger.</li>
+          <li>VP autonomic involvement stalls motility, amplifying steps 2–3.</li>
+          <li>Acute porphyria can cause inappropriate ADH, deepening steps 6–7.</li>
+        </ul>
+        <p class="meta">Porphyria could sit upstream, downstream, or both. Not settled.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LINK STRENGTH -->
+<section>
+  <h2><span class="n">04</span>How strong is each link?</h2>
+  <div class="tbl"><table>
+    <tr><th>Link</th><th>Strength</th></tr>
+    <tr><td>Food load → symptoms</td><td><span class="pill s">Strong</span></td></tr>
+    <tr><td>Regurgitation stopping → more load reaching the gut</td><td><span class="pill s">Logically strong</span></td></tr>
+    <tr><td>Load → stalled motility</td><td><span class="pill s">Strong</span></td></tr>
+    <tr><td>Stalled motility → belly</td><td><span class="pill s">Strong</span></td></tr>
+    <tr><td>Gut fluid sequestration → kidney retention</td><td><span class="pill s">Well established</span></td></tr>
+    <tr><td>Resolution → diuresis + dump</td><td><span class="pill s">Strong</span></td></tr>
+    <tr><td><b>Gut inflammation ↔ whole-body edema (#6)</b></td><td><span class="pill s">Well supported</span> that they move together: removing fructans brings diuresis and less inflammation; anti-inflammatory treatment cleared swelling everywhere. <span class="pill m">Route unproven</span>: capillary leak vs kidney retention vs ADH, and which way causation runs.</td></tr>
+    <tr><td>Persistent gain is mostly fluid</td><td><span class="pill m">Plausible · testable</span></td></tr>
+    <tr><td>Right hand always filling first</td><td><span class="pill nv">Not explained</span></td></tr>
+  </table></div>
+</section>
+
+<!-- LABS -->
+<section>
+  <h2><span class="n">05</span>Tests that would check the model</h2>
+  <div class="tbl"><table>
+    <tr><th>Test</th><th>What it would answer</th></tr>
+    <tr><td><b>Body composition</b>: bioimpedance ECW ratio or DEXA</td><td>Is the 50+ lb fluid or tissue? <b>Most important.</b></td></tr>
+    <tr><td>Fecal calprotectin (during stall and during release)</td><td>Is there real gut-wall inflammation, and does it track the cycle?</td></tr>
+    <tr><td>Tryptase <b>while swollen</b></td><td>Mast-cell activation at the moment of #6.</td></tr>
+    <tr><td>Spot urine sodium (swollen vs clearing)</td><td>Are the kidneys actively holding sodium during swelling? Helps separate leak from retention.</td></tr>
+    <tr><td>CRP</td><td>Systemic inflammation.</td></tr>
+    <tr><td>Albumin / total protein</td><td>Low protein can drive leak independently.</td></tr>
+    <tr><td>Urine albumin/creatinine ratio</td><td>Kidney protein loss.</td></tr>
+    <tr><td>TSH / free T4</td><td>Thyroid causes of fluid and slow gut.</td></tr>
+    <tr><td>BNP ± echo</td><td>Rule out a cardiac cause of fluid.</td></tr>
+    <tr><td>Glucose / lactulose breath test</td><td>Bacterial overgrowth feeding fermentation.</td></tr>
+    <tr><td>Mg, K, B12, ferritin</td><td>Deficits that affect motility and heart rhythm.</td></tr>
+  </table></div>
+</section>
+
+<!-- MEDS -->
+<section>
+  <h2><span class="n">06</span>Medication map</h2>
+  <p class="meta">NAPOS porphyria safety classes: <span class="pill np">NP / PNP</span> first-line safe · <span class="pill psp">PSP</span> possibly porphyrinogenic · <span class="pill p">P</span> porphyrinogenic · <span class="pill nv">not verified</span>. Weight basis ~127 kg. Options listed for discussion only.</p>
+  <ul class="obs">
+    <li><b>Already stopped:</b> montelukast (felt unwell on it) and spironolactone; both turned out to be porphyrinogenic, as are NSAIDs.</li>
+  </ul>
+  <h3>Fluid · kidney · gut (steps 7–10)</h3>
+  <div class="tbl"><table>
+    <tr><th>Drug</th><th>Step</th><th>Class</th><th>Status / note</th></tr>
+    <tr><td>Lubiprostone 24 mcg BID</td><td>10</td><td><span class="pill np">—</span></td><td>Standing</td></tr>
+    <tr><td>Furosemide</td><td>7</td><td><span class="pill np">PNP</span></td><td>In use</td></tr>
+    <tr><td>Hydrochlorothiazide</td><td>7</td><td><span class="pill np">PNP</span></td><td>In use, with furosemide</td></tr>
+    <tr><td>Rifaximin 550 mg TID × 14 days</td><td>8</td><td><span class="pill nv">Not verified</span></td><td>In use. Weak CYP3A4 inducer / PXR activator in vitro</td></tr>
+    <tr><td>Eplerenone 25–50 mg</td><td>7</td><td><span class="pill np">PNP</span></td><td>Option in place of HCTZ: spares K, avoids thiazide low Na; slower onset</td></tr>
+    <tr><td>Amiloride 5–10 mg</td><td>7</td><td><span class="pill np">NP</span></td><td>Option</td></tr>
+    <tr><td>Spironolactone</td><td>7</td><td><span class="pill p">P</span></td><td><b>Avoid</b>: CYP450 inducer</td></tr>
+  </table></div>
+  <h3>Immune · mediator (#6 onward)</h3>
+  <div class="tbl"><table>
+    <tr><th>Drug</th><th>Role</th><th>Class</th><th>Status / note</th></tr>
+    <tr><td>Cetirizine 20 mg BID</td><td>H1 blocker</td><td><span class="pill np">—</span></td><td>In use</td></tr>
+    <tr><td>Hydroxychloroquine 200 mg Sun/Wed/Fri</td><td>Innate / cytokine</td><td><span class="pill psp">PSP</span></td><td>In use</td></tr>
+    <tr><td>Prednisone</td><td>IL-6 / TNF; tightens capillary leak</td><td><span class="pill np">PNP</span></td><td>In use; tapering</td></tr>
+    <tr><td>Famotidine 20 mg BID → up to 40 BID</td><td>H2 blocker</td><td><span class="pill np">PNP</span></td><td>Option</td></tr>
+    <tr><td>Oral cromolyn 200 mg QID</td><td>Gut mast-cell stabiliser; 30 min before meals and at bedtime</td><td><span class="pill np">NP</span></td><td>Option</td></tr>
+    <tr><td>Budesonide 9 mg</td><td>Gut-targeted steroid</td><td><span class="pill np">PNP</span></td><td>Later option</td></tr>
+    <tr><td>Mesalazine 2.4–4.8 g</td><td>Gut anti-inflammatory</td><td><span class="pill np">PNP</span></td><td>Later; interstitial nephritis risk with diuretics</td></tr>
+    <tr><td>Aspirin 81 mg, titrated, supervised</td><td>PGD2 blockade</td><td><span class="pill np">PNP</span></td><td>Later option</td></tr>
+    <tr><td>Oral ketotifen 1–2 mg BID (compounded)</td><td>Mast-cell stabiliser</td><td><span class="pill nv">Not verified</span></td><td>Eye drops are NP</td></tr>
+    <tr><td>Omalizumab 300 mg SC every 4 weeks</td><td>Anti-IgE</td><td><span class="pill nv">Not checked</span></td><td>Later option</td></tr>
+    <tr><td>Infliximab 5 mg/kg (~635 mg) / tocilizumab 8 mg/kg (max 800 mg)</td><td>Anti-TNF / anti-IL-6</td><td><span class="pill nv">Not checked</span></td><td>Later option</td></tr>
+    <tr><td>Montelukast</td><td>Leukotriene blocker</td><td><span class="pill psp">PSP</span></td><td><b>Avoid</b>: CYP1A2 inducer</td></tr>
+  </table></div>
+</section>
+
+<!-- DIRECTION -->
+<section>
+  <h2><span class="n">07</span>Where it stands</h2>
+  <div class="panel">
+    <ul class="obs">
+      <li><b>Combined course</b> (prednisone, loop + thiazide diuretic, rifaximin): swelling came down throughout the body and overnight heart rate fell. This fits the model, but with several treatments at once it cannot show which piece drives which.</li>
+      <li><b>Prednisone</b> is being tapered in 10 mg steps every 5 days; a low standing dose may continue for a possible secondary adrenal insufficiency unrelated to the flare.</li>
+      <li><b>Diuretics</b> continue for now, then are reviewed together with cetirizine.</li>
+      <li><b>The taper is the next natural test</b>: what returns, and in what order, as each layer is lifted.</li>
+      <li><b>At baseline:</b> a new standing protocol, possibly with regular weigh-ins.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>Working notes, October 2026. For discussion with the treating physician; not medical advice.</footer>
+</div>
+
+</body></html>
